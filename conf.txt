@@ -1,2 +1,2 @@
-listen 8080
-document_root ./../http-test-suite/
+listen 80
+document_root /var/www/html

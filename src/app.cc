@@ -10,7 +10,9 @@ int app_init(int argc, char ** argv) {
     auto conf = Config(argv[1]);
 
     Http::HttpServer::init((uint32_t) conf.getInt("listen"), conf.getStr("document_root"));
+
+    return 0;
 }
 
-}
+} // extern "C"
 

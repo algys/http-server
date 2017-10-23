@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#define MAX_CONNS 10000
+#define MAX_CONNS 500000
 #define MAX_EVENTS 100
-#define BUF_SIZE 1024
+#define BUF_SIZE 256
 
 static int epoll_fd = -1;
 static int listen_sock = -1;
@@ -195,7 +195,7 @@ static int accept_conn() {
         return -1;
 
     conns_count++;
-    printf("accepted %d\n", conn_idx);
+    printf("accepted %d curr_conns %d\n", conn_idx, conns_count);
     conns[sock_fd].start_time = now();
 
     (*on_accept_cb)(conn_idx, &conns[conn_idx].inp_data, &conns[conn_idx].out_data, &conns[conn_idx].udata);
@@ -267,7 +267,7 @@ int loop() {
 
     static struct epoll_event ev;
 
-    ev.events = EPOLLIN | EPOLLET;
+    ev.events = EPOLLIN;
     ev.data.fd = listen_sock;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listen_sock, &ev) == -1)
         return -1;
@@ -282,13 +282,13 @@ int loop() {
             if (events[i].data.fd == listen_sock) {
                 int conn_idx = accept_conn();
                 if (conn_idx >= 0) {
-                    add_epoll_ev(conn_idx, EPOLLIN );
+                    add_epoll_ev(conn_idx, EPOLLIN);
                     set_need_read(conn_idx, 1);
                 }
                 continue;
             }
 
-            if (events[i].events & (EPOLLHUP | EPOLLERR)) {
+            if (events[i].events & (EPOLLHUP | EPOLLERR | EPOLLRDHUP)) {
                 conn_destroy(events[i].data.u32);
                 continue;
             }
