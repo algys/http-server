@@ -45,7 +45,7 @@ static int realloc_data(data_t *data) {
 }
 
 void write_to_data(data_t * dest, char const * src, uint32_t len) {
-    if (dest->cap <= dest->size + len)
+    while (dest->cap <= dest->size + len)
         realloc_data(dest);
 
     strncpy(dest->ptr + dest->size, src, len);
