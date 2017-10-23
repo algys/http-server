@@ -14,7 +14,8 @@ long fileSize(std::string const & filename)
 
 namespace Http {
 
-std::string HttpServer::documentRoot = "/home/algys/sources/http-server/http-test-suite";
+std::string HttpServer::documentRoot = ".";
+uint32_t HttpServer::port = 8080;
 
 void HttpServer::onRead(void *udata) {
     if (!udata)
@@ -105,9 +106,11 @@ void HttpServer::destroy(uint32_t id) {
     need_destroy(id);
 }
 
-void HttpServer::init(uint32_t port) {
-    //  HttpServer::port_ = port;
-    ::init(&HttpServer::onAccept, &HttpServer::onRead, &HttpServer::onDestroy);
+void HttpServer::init(uint32_t port, std::string const & dRoot) {
+    HttpServer::port = port;
+    HttpServer::documentRoot = dRoot;
+
+    ::init(port, &HttpServer::onAccept, &HttpServer::onRead, &HttpServer::onDestroy);
     new HttpServer();
 }
 

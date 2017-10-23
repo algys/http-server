@@ -36,6 +36,6 @@ enum {
 
 void write_to_data(data_t * dest, char const * src, uint32_t len);
 
-void init(on_accept_cb_t, on_read_cb_t, on_destroy_cb_t);
+void init(int port, on_accept_cb_t, on_read_cb_t, on_destroy_cb_t);
 void need_destroy(uint32_t conn_idx);
 void set_need_read(uint32_t conn_idx, int val);

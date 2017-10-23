@@ -58,7 +58,8 @@ static void _init() {
     events = (struct epoll_event *) malloc(sizeof(struct epoll_event) * MAX_EVENTS * 10);
 }
 
-void init(on_accept_cb_t accept_cb, on_read_cb_t read_cb, on_destroy_cb_t destroy_cb) {
+void init(int port, on_accept_cb_t accept_cb, on_read_cb_t read_cb, on_destroy_cb_t destroy_cb) {
+    listen_port = port;
     on_accept_cb = accept_cb;
     on_read_cb = read_cb;
     on_destroy_cb = destroy_cb;
@@ -323,10 +324,10 @@ int loop() {
     return 0;
 }
 
-int main() {
-    extern void app_init(void);
+int main(int argc, char ** argv) {
+    extern void app_init(int, char **);
 
-    app_init();
+    app_init(argc, argv);
 
     loop();
 }

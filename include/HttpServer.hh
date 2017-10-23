@@ -10,7 +10,7 @@ namespace Http {
 
 class HttpServer {
 public:
-    static void init(uint32_t port);
+    static void init(uint32_t port, std::string const & dRoot);
     static HttpServer &instance();
 
     HttpServer(HttpServer const &) = delete;
@@ -20,7 +20,7 @@ public:
 
     void destroy(uint32_t id);
 
-    static uint32_t port_;
+    static uint32_t port;
     static std::string documentRoot;
 
 private:
