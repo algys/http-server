@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#define MAX_CONNS 500000
+#define MAX_CONNS 50000
 #define MAX_EVENTS 100
 #define BUF_SIZE 256
 

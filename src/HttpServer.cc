@@ -4,9 +4,16 @@
 #include <HttpResponse.hh>
 #include <fstream>
 #include <sys/stat.h>
+#include <iostream>
 
-long fileSize(std::string const & filename)
-{
+std::string realPath(std::string const & filename) {
+    char *res = realpath(filename.c_str(), 0);
+    if (!res)
+        return filename;
+    return std::string(res);
+}
+
+long fileSize(std::string const & filename) {
     struct stat stat_buf;
     int rc = stat(filename.c_str(), &stat_buf);
     return rc == 0 ? stat_buf.st_size : -1;
@@ -54,13 +61,18 @@ void HttpServer::handler(HttpRequest &request) {
     response.addHeader("Date", timeStr);
     response.addHeader("Server", "Algys");
 
-    if (request.method() == Method::invalid) {
+    file = realPath(documentRoot + file);
+    if (file.find(documentRoot) == std::string::npos) {
+        response.code(403);
+        request.write(response.raw());
+    }
+    else if (request.method() == Method::invalid) {
         response.code(405);
         request.write(response.raw());
     }
     else if (request.method() == Method::GET){
         std::fstream fs;
-        fs.open(documentRoot + file);
+        fs.open(file, std::ios_base::in);
 
         if (!fs.is_open()) {
             response.code(isIndex ? 403: 404);
@@ -68,7 +80,7 @@ void HttpServer::handler(HttpRequest &request) {
         } else {
             response.code(200);
             response.setContentType(file);
-            response.addHeader("Content-Length", std::to_string(fileSize(documentRoot + file)));
+            response.addHeader("Content-Length", std::to_string(fileSize(file)));
 
             request.write(response.raw());
             static char buf[1024];
@@ -76,10 +88,11 @@ void HttpServer::handler(HttpRequest &request) {
             while ((len = fs.readsome(buf, 1024)))
                 request.write(buf, len);
         }
+        fs.close();
     }
     else if (request.method() == Method::HEAD) {
         std::fstream fs;
-        fs.open(documentRoot + file);
+        fs.open(file, std::ios_base::in);
 
         if (!fs.is_open()) {
             response.code(isIndex ? 403: 404);
@@ -87,9 +100,10 @@ void HttpServer::handler(HttpRequest &request) {
         } else {
             response.code(200);
             response.setContentType(file);
-            response.addHeader("Content-Length", std::to_string(fileSize(documentRoot + file)));
+            response.addHeader("Content-Length", std::to_string(fileSize(file)));
             request.write(response.raw());
         }
+        fs.close();
     }
 
     destroy(request.id());

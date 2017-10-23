@@ -14,6 +14,6 @@ WORKDIR /opt/http-serv
 RUN cmake .
 RUN make
 
-CMD ./http-server conf.txt
+CMD ./http-server /etc/httpd.conf
 
 EXPOSE 80
