@@ -29,6 +29,10 @@ static on_destroy_cb_t on_destroy_cb = NULL;
 
 static FILE * log_file = NULL;
 
+
+
+
+
 uint64_t now() {
     struct timeval te;
     gettimeofday(&te, NULL);

@@ -40,12 +40,18 @@ void init(int port, on_accept_cb_t, on_read_cb_t, on_destroy_cb_t);
 void need_destroy(uint32_t conn_idx);
 void set_need_read(uint32_t conn_idx, int val);
 
+
+typedef void (*timer_cb_t)(void * udata);
+
+void timer_init();
+uint32_t timer_add(uint32_t sec, void * udata, timer_cb_t cb);
+void timer_del(uint32_t timer_id);
+
 /*
 typedef struct list_node_t
 {
     struct  list_node_t * next;
     struct  list_node_t * prev;
-    uint32_t u32;
     void * udata;
 } list_node_t;
 
@@ -54,5 +60,4 @@ typedef struct list_t
     list_node_t * head;
     list_node_t * tail;
 } list_t;
-
  */
